@@ -24,6 +24,8 @@ config :eth_price, EthPrice.Endpoint,
     ]
   ]
 
+config :honeybadger, environment_name: :dev
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 
