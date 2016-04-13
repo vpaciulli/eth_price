@@ -2,7 +2,7 @@ defmodule EthPrice.PageController do
   use EthPrice.Web, :controller
 
   def index(conn, value) when is_float(value) do
-    case CryptoCoins.price(value, :ETH_DOLAR) do
+    case CryptoCoins.price(value, :ETH_REAL) do
       {:ok, price} ->
         conn
         |> assign(:ethereum, %{value: value, price: price})

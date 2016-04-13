@@ -1,5 +1,4 @@
 defmodule CryptoCoins do
-  require IEx
   def price(value, coin) when is_bitstring(value) do
     {value_f, _} = Float.parse(value)
     price(value_f, coin)
@@ -9,22 +8,6 @@ defmodule CryptoCoins do
     case price(1, :BTC_ETH) do
       {:ok, val_eth} -> price((value * val_eth), :BTC_REAL)
       error -> error
-    end
-  end
-
-  def price(value, :ETH_DOLAR) do
-    case price(1, :BTH_ETH) do
-      {:ok, val_eth} -> price((value * val_eth), :BTC_DOLAR)
-    end
-  end
-
-  def price(value, :BTC_DOLAR) do
-    case HTTPotion.get("http://developers.agenciaideias.com.br/cotacoes/json") do
-      %{status_code: 200, body: raw} ->
-        %{"dolar" => %{"cotacao" => last_change}} = :jsx.decode(raw, [:return_maps])
-
-        {:ok, (last_change * value)}
-      _error -> {:fail, "Agência Ideias is not responding"}
     end
   end
 
@@ -46,4 +29,22 @@ defmodule CryptoCoins do
     end
   end
 
+  def price(value, :ETH_DOLAR) do
+    case HTTPotion.get("https://poloniex.com/public?command=returnTicker") do
+      %{status_code: 200, body: raw} ->
+        %{"USDT_ETH" => %{"last" => last_change}} = :jsx.decode(raw, [:return_maps])
+        {:ok, (String.to_float(last_change) * value)}
+      _error -> {:fail, "Poloniex is not responding"}
+    end
+  end
+
+  def price(value, :BTC_DOLAR) do
+    case HTTPotion.get("https://poloniex.com/public?command=returnTicker") do
+      %{status_code: 200, body: raw} ->
+        %{"USDT_BTC" => %{"last" => last_change}} = :jsx.decode(raw, [:return_maps])
+
+        {:ok, (String.to_float(last_change) * value)}
+      _error -> {:fail, "Poloniex is not responding"}
+    end
+  end
 end
